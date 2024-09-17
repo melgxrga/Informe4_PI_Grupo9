@@ -31,6 +31,27 @@ function setupDatabase() {
                         return reject(err);
                     }
 
+                    // Crear la tabla publicaciones si no existe
+                    const createPublicacionesTableQuery = `
+                    CREATE TABLE IF NOT EXISTS publicaciones (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        usuario_id INT NOT NULL,
+                        tipo VARCHAR(255) NOT NULL, -- Puede ser 'Curso' o 'Catedrático'
+                        especifico VARCHAR(255) NOT NULL, -- Curso o nombre del catedrático
+                        mensaje TEXT NOT NULL,
+                        fechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+                    )
+                    `;
+                    connection.query(createPublicacionesTableQuery, (err) => {
+                    if (err) {
+                        console.error('Error creando la tabla publicaciones:', err.stack);
+                        return reject(err);
+                    }
+                    console.log('Tabla publicaciones creada o ya existe');
+                    resolve();
+                    });
+
                     // Crear la tabla usuarios si no existe
                     const createUsuariosTableQuery = `
                         CREATE TABLE IF NOT EXISTS usuarios (

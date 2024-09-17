@@ -3,6 +3,7 @@ const app = require('./app');
 const clienteRutas = require('./modulos/usuarios/rutas');
 const catedraticosRouter = require('./modulos/usuarios/catedraticosRutas');
 const cursosRouter = require('./modulos/usuarios/cursosRutas');
+const publicacionesRutas = require('./modulos/publicaciones/publicacionesRutas');
 const { setupDatabase } = require('./DB/dbSetup'); // Importar el script de configuración de la base de datos
 
 // Middleware para parsear JSON
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use('/api', clienteRutas);
 app.use('/api', catedraticosRouter);
 app.use('/api', cursosRouter);
+app.use('/api', publicacionesRutas);
 
 // Inicializar la base de datos y las tablas
 setupDatabase().then(() => {

@@ -31,8 +31,8 @@ function setupDatabase() {
                         return reject(err);
                     }
 
-                    // Crear la tabla si no existe
-                    const createTableQuery = `
+                    // Crear la tabla usuarios si no existe
+                    const createUsuariosTableQuery = `
                         CREATE TABLE IF NOT EXISTS usuarios (
                             id INT AUTO_INCREMENT PRIMARY KEY,
                             registroAcademico VARCHAR(255) NOT NULL,
@@ -42,13 +42,48 @@ function setupDatabase() {
                             correoElectronico VARCHAR(255) NOT NULL
                         )
                     `;
-                    connection.query(createTableQuery, (err) => {
+                    connection.query(createUsuariosTableQuery, (err) => {
                         if (err) {
-                            console.error('Error creando la tabla:', err.stack);
+                            console.error('Error creando la tabla usuarios:', err.stack);
                             return reject(err);
                         }
                         console.log('Tabla usuarios creada o ya existe');
-                        resolve();
+
+                        // Crear la tabla catedraticos si no existe
+                        const createCatedraticosTableQuery = `
+                            CREATE TABLE IF NOT EXISTS catedraticos (
+                                id INT AUTO_INCREMENT PRIMARY KEY,
+                                nombre VARCHAR(255) NOT NULL,
+                                apellido VARCHAR(255) NOT NULL,
+                                correoElectronico VARCHAR(255) NOT NULL
+                            )
+                        `;
+                        connection.query(createCatedraticosTableQuery, (err) => {
+                            if (err) {
+                                console.error('Error creando la tabla catedraticos:', err.stack);
+                                return reject(err);
+                            }
+                            console.log('Tabla catedraticos creada o ya existe');
+
+                            // Crear la tabla cursos si no existe
+                            const createCursosTableQuery = `
+                                CREATE TABLE IF NOT EXISTS cursos (
+                                    id INT AUTO_INCREMENT PRIMARY KEY,
+                                    nombre VARCHAR(255) NOT NULL,
+                                    descripcion TEXT,
+                                    catedratico_id INT,
+                                    FOREIGN KEY (catedratico_id) REFERENCES catedraticos(id)
+                                )
+                            `;
+                            connection.query(createCursosTableQuery, (err) => {
+                                if (err) {
+                                    console.error('Error creando la tabla cursos:', err.stack);
+                                    return reject(err);
+                                }
+                                console.log('Tabla cursos creada o ya existe');
+                                resolve();
+                            });
+                        });
                     });
                 });
             });

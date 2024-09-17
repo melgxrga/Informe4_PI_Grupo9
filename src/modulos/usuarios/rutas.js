@@ -82,4 +82,20 @@ router.post('/usuarios/recuperar-contrasena', async (req, res) => {
     }
 });
 
+// Ruta de login
+router.post('/login', async (req, res) => {
+    try {
+        const { registroAcademico, contrasena } = req.body;
+        const user = await controlador.login(registroAcademico, contrasena);
+        if (user) {
+            res.json({ message: 'Login exitoso', user });
+        } else {
+            res.status(401).send('Credenciales incorrectas');
+        }
+    } catch (err) {
+        console.error('Error en el login:', err);
+        res.status(500).send('Error en el login');
+    }
+});
+
 module.exports = router;

@@ -92,6 +92,30 @@ function actualizarContrasena(tabla, id, nuevaContrasena) {
     });
 }
 
+function buscarPorRegistroAcademico(tabla, registroAcademico) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM ${tabla} WHERE registroAcademico = ?`;
+        connection.query(query, [registroAcademico], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results[0]);
+        });
+    });
+}
+
+function buscarPorCorreoElectronico(tabla, correoElectronico) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM ${tabla} WHERE correoElectronico = ?`;
+        connection.query(query, [correoElectronico], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results[0]);
+        });
+    });
+}
+
 module.exports = {
     conmysql,
     todos,
@@ -100,4 +124,6 @@ module.exports = {
     eliminar,
     buscarPorRegistroYCorreo,
     actualizarContrasena,
+    buscarPorRegistroAcademico,
+    buscarPorCorreoElectronico,
 };

@@ -25,10 +25,27 @@ async function recuperarContrasena(registroAcademico, correoElectronico, nuevaCo
     return null;
 }
 
+async function login(identificador, contrasena) {
+    let usuario;
+    if (identificador.includes('@')) {
+        // Si el identificador contiene '@', se asume que es un correo electrónico
+        usuario = await db.buscarPorCorreoElectronico(TABLA, identificador);
+    } else {
+        // De lo contrario, se asume que es un registro académico
+        usuario = await db.buscarPorRegistroAcademico(TABLA, identificador);
+    }
+
+    if (usuario && usuario.contrasena === contrasena) {
+        return usuario;
+    }
+    return null;
+}
+
 module.exports = {
     todos,
     uno,
     agregar,
     eliminar,
     recuperarContrasena,
+    login,
 };

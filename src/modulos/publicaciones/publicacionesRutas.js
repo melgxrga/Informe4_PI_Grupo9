@@ -5,15 +5,17 @@ const publicacionesControlador = require('./publicacionesControlador');
 // Crear una nueva publicación
 router.post('/publicaciones', async (req, res) => {
     try {
-        const { usuario_id, tipo, especifico, mensaje } = req.body;
+        const { usuario_id, curso_id, catedratico_id, tipo, especifico, mensaje } = req.body;
 
         // Validación de campos requeridos
-        if (!usuario_id || !tipo || !especifico || !mensaje) {
+        if (!usuario_id || !curso_id || !tipo || !especifico || !mensaje) {
             return res.status(400).send('Todos los campos son obligatorios');
         }
 
         const publicacion = {
             usuario_id,
+            curso_id,
+            catedratico_id, // Asegúrate de incluir catedratico_id
             tipo,
             especifico,
             mensaje

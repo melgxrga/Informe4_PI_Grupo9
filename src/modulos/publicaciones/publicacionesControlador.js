@@ -1,55 +1,41 @@
 const db = require('../../DB/mysql');
 const TABLA = 'publicaciones';
 
-function agregarPublicacion(data) {
+async function agregarPublicacion(data) {
     return db.agregar(TABLA, data);
 }
 
-function eliminarPublicacion(id) {
-    const query = `DELETE FROM ${TABLA} WHERE id = ?`;
-    return new Promise((resolve, reject) => {
-        db.conmysql().query(query, [id], (err, result) => {
-            if (err) {
-                return reject(err);
-            }
-            resolve(result);
-        });
-    });
-}
-
 async function obtenerPublicaciones(filtros) {
-    let query = `SELECT * FROM ${TABLA}`;
-    let queryParams = [];
-    let condiciones = [];
+    let query = `SELECT p.*, c.nombre AS nombreCurso, cat.nombre AS nombreCatedratico, cat.apellido AS apellidoCatedratico
+                 FROM ${TABLA} p
+                 LEFT JOIN cursos c ON p.curso_id = c.id
+                 LEFT JOIN catedraticos cat ON p.catedratico_id = cat.id
+                 WHERE 1=1`;
 
-    // Aplicar los filtros si se proporcionan
+    const params = [];
+
     if (filtros.cursoId) {
-        condiciones.push("curso_id = ?");
-        queryParams.push(filtros.cursoId);
+        query += ' AND p.curso_id = ?';
+        params.push(filtros.cursoId);
     }
+
     if (filtros.catedraticoId) {
-        condiciones.push("catedratico_id = ?");
-        queryParams.push(filtros.catedraticoId);
+        query += ' AND p.catedratico_id = ?';
+        params.push(filtros.catedraticoId);
     }
+
     if (filtros.nombreCurso) {
-        condiciones.push("curso_nombre LIKE ?");
-        queryParams.push(`%${filtros.nombreCurso}%`);
+        query += ' AND c.nombre LIKE ?';
+        params.push(`%${filtros.nombreCurso}%`);
     }
+
     if (filtros.nombreCatedratico) {
-        condiciones.push("catedratico_nombre LIKE ?");
-        queryParams.push(`%${filtros.nombreCatedratico}%`);
+        query += ' AND (cat.nombre LIKE ? OR cat.apellido LIKE ?)';
+        params.push(`%${filtros.nombreCatedratico}%`, `%${filtros.nombreCatedratico}%`);
     }
-
-    // Agregar condiciones a la consulta SQL
-    if (condiciones.length > 0) {
-        query += " WHERE " + condiciones.join(" AND ");
-    }
-
-    // Ordenar por fecha de creación (más recientes primero)
-    query += " ORDER BY fecha_creacion DESC";
 
     return new Promise((resolve, reject) => {
-        db.conmysql().query(query, queryParams, (err, results) => {
+        db.conmysql().query(query, params, (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -58,9 +44,12 @@ async function obtenerPublicaciones(filtros) {
     });
 }
 
-// Exportar ambas funciones
+async function eliminarPublicacion(id) {
+    return db.eliminar(TABLA, id);
+}
+
 module.exports = {
     agregarPublicacion,
     obtenerPublicaciones,
-    eliminarPublicacion
+    eliminarPublicacion,
 };

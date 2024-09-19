@@ -51,6 +51,8 @@ router.post('/usuarios', async (req, res) => {
     }
 });
 
+
+
 // Eliminar un usuario por ID
 router.delete('/usuarios/:id', async (req, res) => {
     try {
